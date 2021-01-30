@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+# coding=utf-8
+import os
+
+from base_cgi import BaseCgi, LABEL_TEMPLETE_PATH
+from comm import load_local_json, save_local_json
+
+
+class Label(BaseCgi):
+
+    def __init__(self):
+        super().__init__(debug=False, auth=True)
+
+    def cgi_run(self):
+        if self.get_reuqest_method() == "GET":
+            self.get()
+        elif self.get_reuqest_method() == "POST":
+            self.post()
+
+        self.respone_json(status=-400, msg="不支持请求方式")
+
+    def get(self):
+        label_list = self.label_list()
+        self.respone_json(data=label_list, msg="标签查询成功")
+
+    def post(self):
+        res_data = self.load_json_request()
+        if not res_data:
+            self.respone_json(status=-207, msg="未发现保存内容")
+        # 检查是否包含关键字段
+        templete_name = res_data.get("templete_name")
+        method = res_data.get("method")
+        conn = res_data.get("connectionCategories")
+        label = res_data.get("labelCategories")
+        if not all([templete_name, method in ["add", "del", "edit"], conn, label]):
+            self.respone_json(status=-206, msg="格式有误")
+        label_tp_data = load_local_json(LABEL_TEMPLETE_PATH)
+        if method in ["add", "edit"]:
+            label_tp_data[templete_name] = {
+                "connectionCategories": self.gen_conn(res_data["connectionCategories"]),
+                "labelCategories": self.gen_label(res_data["labelCategories"]),
+            }
+        elif method in ["del"] and label_tp_data.get(templete_name):
+            del label_tp_data[templete_name]
+
+        ret = save_local_json(label_tp_data, LABEL_TEMPLETE_PATH)
+        if not ret:
+            self.respone_json(status=-206, msg="保存失败")
+        self.respone_json()
+
+    def gen_conn(self, conn):
+        res = []
+        for idx, item in enumerate(conn):
+            res.append({
+                "id": idx,
+                "text": item["text"]
+            })
+        return res
+
+    def gen_label(self, labels):
+        res = []
+        for idx, item in enumerate(labels):
+            res.append({
+                "id": idx,
+                "text": item["text"],
+                "color": item["color"],
+                "borderColor": "#a38671"
+            })
+        return res
+
+    def label_list(self):
+        # 查文件状态
+        label_data = load_local_json(LABEL_TEMPLETE_PATH)
+
+        return label_data
+
+
+if __name__ == '__main__':
+    Label().cgi_run()

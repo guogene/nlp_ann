@@ -1,0 +1,110 @@
+#!/usr/bin/python3
+# coding=utf-8
+import os
+
+from base_cgi import BaseCgi, TASK_DATA_PATH, LABEL_DATA_PATH
+from comm import load_local_json, query_task_data_file, query_task_file_name, get_now_date, save_local_json
+
+
+class Task(BaseCgi):
+
+    def __init__(self):
+        super().__init__(debug=False, auth=True)
+
+    def cgi_run(self):
+        if self.get_reuqest_method() == "GET":
+            self.get()
+        elif self.get_reuqest_method() == "POST":
+            self.post()
+
+        self.respone_json(status=-400, msg="不支持请求方式")
+
+    def get(self):
+        params = self.load_query_params()
+        file_name = params.get("file_name")
+        if file_name:
+            res = self.task_file(file_name)
+            if res is False:
+                self.respone_json(status=-204, msg="文件不存在")
+
+            self.respone_json(data=res)
+
+        wait_list, done_list = self.task_cate()
+        self.respone_json(data={"wait": wait_list, "done": done_list}, msg="任务查询成功")
+
+    def post(self):
+        res_data = self.load_json_request()
+        if not res_data:
+            self.respone_json(status=-207, msg="未发现保存内容")
+        # 检查是否包含关键字段
+        file_name = res_data.get("title")
+        ret = query_task_file_name(file_name)
+        conn = res_data.get("connectionCategories")
+        label = res_data.get("labelCategories")
+        if not all([file_name, ret, conn, label]):
+            self.respone_json(status=-206, msg="格式有误")
+        res_data["update_time"] = get_now_date()
+        label_data = load_local_json(LABEL_DATA_PATH)
+        label_data[file_name] = res_data
+        # 不需要 content
+        if label_data.get("content"):
+            del label_data['content']
+
+        ret = save_local_json(label_data, LABEL_DATA_PATH)
+        if not ret:
+            self.respone_json(status=-206, msg="保存失败")
+        self.respone_json()
+
+    def task_file(self, file_name):
+        file_name = query_task_file_name(file_name)
+        if not file_name:
+            return False
+        fn = os.path.splitext(file_name)[0]
+        label_data = load_local_json(LABEL_DATA_PATH)
+        fn_label_data = label_data.get(fn, {})
+        if not fn_label_data:
+            fn_label_data["connectionCategories"] = []
+            fn_label_data["labelCategories"] = []
+            fn_label_data["update_time"] = ""
+            fn_label_data["title"] = fn
+            fn_label_data["done_status"] = False
+
+        with open(os.path.join(TASK_DATA_PATH, file_name), "r", encoding="utf8") as f:
+            fn_label_data["content"] = f.read()
+
+        return fn_label_data
+
+    def task_cate(self):
+        files_list = query_task_data_file()
+        # 查文件状态
+        label_data = load_local_json(LABEL_DATA_PATH)
+        wait_res = []
+        done_res = []
+        for f in files_list:
+            f_info = label_data.get(f)
+            if not f_info:
+                wait_res.append({
+                    "title": f,
+                    "update_time": "无",
+                    "done_state": False
+                })
+                continue
+
+            elif f_info.get("done_state") is True:
+                done_res.append({
+                    "title": f,
+                    "update_time": f_info.get("update_time"),
+                    "done_state": True
+                })
+            else:
+                wait_res.append({
+                    "title": f,
+                    "update_time": f_info.get("update_time"),
+                    "done_state": False
+                })
+
+        return wait_res, done_res
+
+
+if __name__ == '__main__':
+    Task().cgi_run()

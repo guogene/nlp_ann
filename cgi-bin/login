@@ -1,0 +1,32 @@
+#!/usr/bin/python3
+# -*- coding: UTF-8 -*-
+
+from base_cgi import BaseCgi
+from auth import Auth
+
+
+class Login(BaseCgi):
+
+    def __init__(self):
+        super().__init__(debug=False)
+
+    def cgi_run(self):
+        if self.get_reuqest_method() == "POST":
+            self.post()
+
+        self.respone_json(status=-400, msg="不支持请求方式")
+
+    def post(self):
+        data = self.load_json_request()
+        username = data.get("username")
+        password = data.get("password")
+        if not all([username, password]):
+            self.respone_json(status=-200, msg="账号密码不能为空")
+        token = Auth(username=username).gen_token(password)
+        if not token:
+            self.respone_json(status=-201, msg="账号或密码错误")
+        self.respone_json(data=token, msg="登陆成功.")
+
+
+if __name__ == '__main__':
+    Login().cgi_run()
