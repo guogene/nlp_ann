@@ -61,10 +61,13 @@
                 ['mdi-inbox-arrow-down', '任务大厅', "/"],
                 ['mdi-send', '标签管理', "labels"],
                 ['mdi-delete', '个人信息', "null"],
-            ],
-            member_links: [
                 ['mdi-alert-octagon', "权限管理", "null"],
                 ['mdi-alert', "任务分配", "null"],
+            ],
+            member_links: [
+                ['mdi-inbox-arrow-down', '任务大厅', "/"],
+                ['mdi-send', '标签管理', "labels"],
+                ['mdi-delete', '个人信息', "null"],
             ],
             links: [],
             role: ""
