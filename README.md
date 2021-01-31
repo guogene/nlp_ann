@@ -48,7 +48,8 @@ Windows:
 
 ```sh
 部署完成后, 访问 http://remote_ip/poplar
-
+需要标注的文本文件,放置ann_data/task_data 文件夹下, 注意文件名不能重复!! 且历史名称也不要重复,采用文件名做唯一标识
+完成后的标注信息存储在label_data.json中
 ```
 
 ## 图例
