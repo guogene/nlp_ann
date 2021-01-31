@@ -71,13 +71,15 @@
         },
         methods: {
             login_res() {
+                var self = this;
                 this.$http.post('/login', {"username": this.username, "password": this.password}).then(({data}) => {
                     if (data.status === 200) {
                         var token = data.data;
                         localStorage.setItem("token", this.username + "_" + token);
-
                         this.$router.push("/").catch(_ => {
                         });
+                        location.reload();
+
 
                     } else {
                         alert(data.msg);

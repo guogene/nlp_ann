@@ -8,10 +8,10 @@ var BASEURL = "http://localhost:8080";
 var http = axios.create({
     baseURL: BASEURL,
     timeout: 1000,
-    headers: {'token': localStorage.getItem('token')}
 });
 
 http.interceptors.request.use(function (request) {
+    request.headers["token"] = localStorage.getItem('token');
     return request
 }, function (error) {
     // Do something with request error

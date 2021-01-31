@@ -19,8 +19,8 @@
             <v-list-item
                     v-for="[icon, text, link] in links"
                     :key="icon"
-                    :href="link"
                     link
+                    @click="go_page(link)"
             >
                 <v-list-item-icon>
                     <v-icon>{{ icon }}</v-icon>
@@ -58,13 +58,13 @@
     export default Vue.extend({
         data: () => ({
             admin_links: [
-                ['mdi-inbox-arrow-down', '任务大厅', "/poplar"],
-                ['mdi-send', '标签管理', "/poplar/labels"],
-                ['mdi-delete', '个人信息', "/poplar"],
+                ['mdi-inbox-arrow-down', '任务大厅', "/"],
+                ['mdi-send', '标签管理', "labels"],
+                ['mdi-delete', '个人信息', "null"],
             ],
             member_links: [
-                ['mdi-alert-octagon', "权限管理", "/poplar"],
-                ['mdi-alert', "任务分配", "/poplar"],
+                ['mdi-alert-octagon', "权限管理", "null"],
+                ['mdi-alert', "任务分配", "null"],
             ],
             links: [],
             role: ""
@@ -85,6 +85,14 @@
             log_out() {
                 localStorage.setItem("token", "");
                 this.$router.push("login").catch(_ => {
+                });
+            },
+            go_page(name){
+                if (name == "null"){
+                    alert("未开放功能");
+                    return
+                }
+                this.$router.push(name).catch(_ => {
                 });
             }
         },
