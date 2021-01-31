@@ -227,11 +227,32 @@
             },
             set_complete: function () {
                 this.complete_loading = true;
-                setTimeout(() => (this.complete_loading = false), 3000)
+                var res_data = this.jsonData;
+                res_data["labels"] = this.annotator.store.json.labels;
+                res_data["connections"] = this.annotator.store.json.connections;
+                res_data["done_state"] = true;
+                this.$http.post('/task', res_data).then(({data}) => {
+                    if (data.status === 200) {
+                        this.complete_loading = false;
+                    } else {
+                        alert(data.msg);
+                        this.complete_loading = false;
+                    }
+                });
             },
             set_save: function () {
                 this.save_loading = true;
-                setTimeout(() => (this.save_loading = false), 3000)
+                var res_data = this.jsonData;
+                res_data["labels"] = this.annotator.store.json.labels;
+                res_data["connections"] = this.annotator.store.json.connections;
+                this.$http.post('/task', res_data).then(({data}) => {
+                    if (data.status === 200) {
+                        this.save_loading = false;
+                    } else {
+                        alert(data.msg);
+                        this.save_loading = false;
+                    }
+                });
             },
         },
         computed: {

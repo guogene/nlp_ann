@@ -1,6 +1,5 @@
 <template>
     <v-app>
-        <AppBar></AppBar>
         <v-navigation-drawer
                 app
         >

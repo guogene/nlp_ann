@@ -21,7 +21,7 @@
                                 <v-list-item-title>{{ n["title"] }}</v-list-item-title>
                                 <div>
                                     标签：
-                                    <v-chip v-for="(l, idx) in n.label"
+                                    <v-chip v-for="(l, idx) in n.labelCategories"
                                             :key="idx"
                                             class="ma-2"
                                             :color="l.color"
@@ -47,6 +47,7 @@
                                     <v-btn
                                             color="error"
                                             style="margin-left: 5px"
+                                            @click="del_templete(p_idx)"
                                     >
                                         删除
                                     </v-btn>
@@ -105,7 +106,7 @@
                         subheader
                 >
                     <v-subheader>标签</v-subheader>
-                    <v-list-item v-for="(l, idx) in temp_label_info.label" :key="idx">
+                    <v-list-item v-for="(l, idx) in temp_label_info.labelCategories" :key="idx">
                         <v-list-item-content>
                             <v-list-item-title>{{ l.text }}
                             </v-list-item-title>
@@ -205,60 +206,28 @@
         data: () => ({
             dialog_edit: false,
             temp_label_info: {
-                "label": [],
+                "labelCategories": [],
                 "connectionCategories": [],
                 "title": "模版名称"
             },
             temp_label: "",
             temp_color: "",
             temp_connectionCategories: "",
-            labels_data: [
-                {
-                    label: [
-                        {
-                            "id": 0,
-                            "text": "名词",
-                            "color": "#eac0a2",
-                            "borderColor": "#a38671"
-                        },
-                        {
-                            "id": 1,
-                            "text": "动词",
-                            "color": "#619dff",
-                            "borderColor": "#436db2"
-                        },
-                        {
-                            "id": 2,
-                            "text": "形容词",
-                            "color": "#9d61ff",
-                            "borderColor": "#6d43b2"
-                        },
-                        {
-                            "id": 3,
-                            "text": "副词",
-                            "color": "#ff9d61",
-                            "borderColor": "#b26d43"
-                        }
-                    ],
-                    connectionCategories: [
-                        {
-                            "id": 0,
-                            "text": "修饰"
-                        },
-                        {
-                            "id": 1,
-                            "text": "限定"
-                        },
-                        {
-                            "id": 2,
-                            "text": "是...的动作"
-                        }
-                    ],
-                    title: "测试模版"
-                }
-            ]
+            labels_data: []
         }),
+        mounted(): void {
+            this.get_label_list()
+        },
         methods: {
+            get_label_list(){
+                this.$http.get('/label').then(({data}) => {
+                    if (data.status === 200) {
+                        this.labels_data = data.data;
+                    } else {
+                        alert(data.msg);
+                    }
+                });
+            },
             addLabel() {
                 var label = this.temp_label;
                 var color = this.temp_color;
@@ -266,16 +235,16 @@
                     alert("标签和颜色不能为空");
                     return
                 }
-                for (let i = 0; i < this.temp_label_info.label.length; i++) {
-                    if (label == this.temp_label_info.label[i].text) {
+                for (let i = 0; i < this.temp_label_info.labelCategories.length; i++) {
+                    if (label == this.temp_label_info.labelCategories[i].text) {
                         alert("标签不能重复");
                         return;
                     }
                 }
-                this.temp_label_info.label.push({text: label, "color": color})
+                this.temp_label_info.labelCategories.push({text: label, "color": color})
             },
             delLabel(idx) {
-                this.temp_label_info.label.splice(idx, 1);
+                this.temp_label_info.labelCategories.splice(idx, 1);
             },
             addCon() {
                 var label = this.temp_connectionCategories;
@@ -296,18 +265,43 @@
             },
             saveTemp() {
                 var res = {};
-                res["label"] = this.temp_label_info.label;
+                res["labelCategories"] = this.temp_label_info.labelCategories;
                 res["connectionCategories"] = this.temp_label_info.connectionCategories;
                 res["title"] = this.temp_label_info.title;
+                res["method"] = "edit";
                 if (!res['title']) {
                     alert("模版名称不能为空");
                     return
                 }
-                if (!res['label']) {
+                if (!res['labelCategories']) {
                     alert("标签不能为空");
                     return
                 }
-                console.log(res);
+                var self = this;
+                this.$http.post('/label', res).then(({data}) => {
+                    if (data.status === 200) {
+                        self.get_label_list();
+                        this.dialog_edit = false
+                    } else {
+                        alert(data.msg);
+                        this.dialog_edit = false
+                    }
+                });
+            },
+            del_templete(idx){
+                var data = this.labels_data[idx];
+                data['method'] = 'del';
+                var self = this;
+                this.$http.post('/label', data).then(({data}) => {
+                    if (data.status === 200) {
+                        self.get_label_list();
+                        this.dialog_edit = false
+                    } else {
+                        alert(data.msg);
+                        this.dialog_edit = false
+                    }
+                });
+
             },
             edit_info(idx) {
                 this.temp_label_info = this.labels_data[idx];
@@ -315,7 +309,7 @@
             },
             add_new_info() {
                 this.temp_label_info = {
-                    "label": [],
+                    "labelCategories": [],
                     "connectionCategories": [],
                     "title": ""
                 };
