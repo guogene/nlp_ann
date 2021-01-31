@@ -40,6 +40,8 @@
         "color": "#ff9d61",
         "borderColor": "#b26d43"
       }
-    ]
+    ],
+    "labels": [],
+    "connections": []
   }
 }
