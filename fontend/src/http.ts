@@ -3,7 +3,7 @@ import axios from 'axios'
 import router from "./router";
 
 var DEBUG = true;
-var BASEURL = "http://localhost:8080";
+var BASEURL = "/cgi-bin";
 
 var http = axios.create({
     baseURL: BASEURL,

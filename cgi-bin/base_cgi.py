@@ -6,7 +6,7 @@ import os
 import sys
 import urllib.parse
 
-
+FRONTENT_PATH = '/var/www/html/poplar/index.html'
 TASK_DATA_PATH = "/home/ann_data/task_data"
 LABEL_DATA_PATH = "/home/ann_data/label_data.json"
 LABEL_TEMPLETE_PATH = "/home/ann_data/label_templete.json"

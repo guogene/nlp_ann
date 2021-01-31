@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# -*- coding: UTF-8 -*-
+import sys
+
+from base_cgi import BaseCgi, FRONTENT_PATH
+
+
+class Index(BaseCgi):
+
+    def __init__(self):
+        super().__init__(debug=False)
+
+    def cgi_run(self):
+        print("Content-type:text/html")
+        print("")
+        with open(FRONTENT_PATH, "r") as f:
+            print(f.read())
+        sys.exit(0)
+
+
+if __name__ == '__main__':
+    Index().cgi_run()
