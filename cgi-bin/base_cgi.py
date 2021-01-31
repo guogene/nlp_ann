@@ -14,7 +14,10 @@ USER_INFO_PATH = "/home/ann_data/user_info.json"
 
 from auth import Auth
 
+
 class BaseCgi:
+
+    request_user = None
 
     def __init__(self, debug=False, auth=False):
         self.debug = debug
@@ -47,7 +50,8 @@ class BaseCgi:
 
     def load_query_params(self):
         uri = self.get_request_uri()
-        return dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(uri).query))
+        res = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(uri).query))
+        return res
 
     def load_form_data(self):
         if self.is_json_request() or self.get_reuqest_method() == "GET":
@@ -75,7 +79,9 @@ class BaseCgi:
             self.respone_json(status=-500, msg="token异常")
         ret = Auth(username, token).verify_token()
         if not ret:
-            self.respone_json(status=-501, msg="无效token")
+            self.respone_json(status=-500, msg="无效token")
+
+        self.request_user = username
 
     def respone_json(self, data=None, status=200, msg="success"):
         print("Content-type:application/json")

@@ -43,10 +43,10 @@ def query_task_file_name(task):
     files_list = []
     for root, dirs, files in os.walk(TASK_DATA_PATH):
         files_list += files
-    files_list = [os.path.splitext(x)[0].encode("utf8", errors='surrogateescape').decode("utf8") for x in files_list]
-    for f in files_list:
+    filesname_list = [os.path.splitext(x)[0].encode("utf8", errors='surrogateescape').decode("utf8") for x in files_list]
+    for idx, f in enumerate(filesname_list):
         if f == task:
-            return f
+            return files_list[idx]
     return None
 
 
@@ -55,4 +55,4 @@ def get_today_date():
 
 
 def get_now_date():
-    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%s")
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

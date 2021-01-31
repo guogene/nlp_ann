@@ -28,7 +28,7 @@ class Label(BaseCgi):
         if not res_data:
             self.respone_json(status=-207, msg="未发现保存内容")
         # 检查是否包含关键字段
-        templete_name = res_data.get("templete_name")
+        templete_name = res_data.get("title")
         method = res_data.get("method")
         conn = res_data.get("connectionCategories")
         label = res_data.get("labelCategories")
@@ -39,6 +39,7 @@ class Label(BaseCgi):
             label_tp_data[templete_name] = {
                 "connectionCategories": self.gen_conn(res_data["connectionCategories"]),
                 "labelCategories": self.gen_label(res_data["labelCategories"]),
+                "title": templete_name
             }
         elif method in ["del"] and label_tp_data.get(templete_name):
             del label_tp_data[templete_name]

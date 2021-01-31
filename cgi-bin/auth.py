@@ -13,16 +13,18 @@ class Auth:
         self.username = username
         self.token = token
 
-    def verify_username(self):
+    def verify_username(self, del_pwd=True):
         if not self.user_info:
             return False
         for item in self.user_info:
             if item["user_name"] == self.username:
+                if del_pwd:
+                    del item["password"]
                 return item
         return False
 
     def verify_token(self):
-        ret = self.verify_username()
+        ret = self.verify_username(del_pwd=False)
         if not ret:
             return False
         today = get_today_date()
@@ -33,7 +35,7 @@ class Auth:
         return True
 
     def gen_token(self, password):
-        ret = self.verify_username()
+        ret = self.verify_username(del_pwd=False)
         if not ret:
             return False
         if ret['password'] != password:
