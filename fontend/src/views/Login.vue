@@ -19,7 +19,7 @@
             </template>
             <v-card>
                 <v-card-title>
-                    <span class="headline">健康互联NLP标注平台</span>
+                    <span class="headline">NLP标注平台</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container>
