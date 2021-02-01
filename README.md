@@ -23,7 +23,7 @@ OS X & Linux:
 	npm build
 后端:
 	将cgi-bin中的接口文件移至 apache的 /var/www/cgi-bin 目录下,并提供可执行权限(chmod)
-
+	将打包好的前端 dist中的文件放置 /var/www/html/poplar 目录下, 无poplar文件夹自行创建
 数据:
 	ann_data文件夹存放到适合的目录,并修改 cgi-bin/base_cgi.py 中的配置路径, 并提供可读写权限(chmod)
 	user_info.json 用于配置账号信息
@@ -38,10 +38,12 @@ Windows:
 	npm build
 后端:
 	将cgi-bin中的接口文件移至 apache的 apache/www/cgi-bin 目录下,并提供可执行权限(chmod)
-
+	将打包好的前端 dist中的文件放置 apache/www/html/poplar 目录下, 无poplar文件夹自行创建
 数据:
-	ann_data文件夹存放到适合的目录,并修改 cgi-bin/base_cgi.py 中的配置路径, 并提供可读写权限(chmod)
-	user_info.json 用于配置账号信息
+	ann_data -> 文件夹存放到适合的目录,并修改 cgi-bin/base_cgi.py 中的配置路径, 并提供可读写权限(chmod)
+	user_info.json -> 用于配置账号信息
+	label_data.json -> 完成后的标注信息存储
+	label_templete.json -> 标签模板的储存
 ```
 
 ## 使用
@@ -49,7 +51,7 @@ Windows:
 ```sh
 部署完成后, 访问 http://remote_ip/poplar
 需要标注的文本文件,放置ann_data/task_data 文件夹下, 注意文件名不能重复!! 且历史名称也不要重复,采用文件名做唯一标识
-完成后的标注信息存储在label_data.json中
+
 ```
 
 ## 图例
