@@ -14,6 +14,20 @@
 
 
 ## 安装
+DOCKER 一键启动
+```
+在项目根目录
+docker build -t poplar:v1 .
+
+docker run -itd --name poplar -v $(pwd)/ann_data:/home/ann_data -p8012:80 poplar:v1
+
+启动成功后,打开浏览器 访问 http://localhost:8012/poplar  即可。
+
+数据:
+	ann_data 通过挂载的方式, 可直接修改本地文件夹, 容器会读取本地文件的变更。
+	user_info.json 用于配置账号信息
+
+```
 
 OS X & Linux:
 
